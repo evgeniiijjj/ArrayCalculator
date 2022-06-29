@@ -1,12 +1,12 @@
 import java.util.Arrays;
 import java.util.Random;
 import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.RecursiveTask;
 
 public class Main {
+    static int capacity = 200_000_000;
+    static int numTasksPerThread = 500_000;
 
     public static void main(String[] args) {
-        int capacity = 200000000;
         int[] array = getArray(capacity);
         int result;
 
@@ -34,7 +34,7 @@ public class Main {
         start = System.currentTimeMillis();
         result = sumArrayWithForkJoinPool(array);
         timeDiff = System.currentTimeMillis() - start;
-        System.out.println("Разбиением задачи на подзадачи и запуска из в отдельном потоке: результат " + result + ", затрачено времени " + timeDiff + " млс");
+        System.out.println("Разбиением задачи на подзадачи и запуска их в отдельном потоке: результат " + result + ", затрачено времени " + timeDiff + " млс");
     }
 
     static int[] getArray(int capacity) {
@@ -64,38 +64,6 @@ public class Main {
     }
 
     static int sumArrayWithForkJoinPool(int[] array) {
-        return new ForkJoinPool().invoke(new MyRecursiveTask(array, 0, array.length - 1));
-    }
-
-    static class MyRecursiveTask extends RecursiveTask<Integer> {
-        private final int[] array;
-        private final int start;
-        private final int finish;
-
-        MyRecursiveTask(int[] array, int start, int finish) {
-            this.array = array;
-            this.start = start;
-            this.finish = finish;
-        }
-
-        int sumArr(int[] array, int start, int finish) {
-            int result = 0;
-            for (int i = start; i < finish + 1; i++) {
-                result += array[i];
-            }
-            return result;
-        }
-
-        @Override
-        protected Integer compute() {
-            if (finish - start < 500000) {
-                return sumArr(array, start, finish);
-            }
-            int middle = (finish + start) / 2;
-            MyRecursiveTask oneTask = new MyRecursiveTask(array, start, middle);
-            MyRecursiveTask secondTask = new MyRecursiveTask(array, middle + 1, finish);
-            oneTask.fork();
-            return oneTask.join() + secondTask.compute();
-        }
+        return new ForkJoinPool().invoke(new MyRecursiveTask(array, 0, array.length - 1, numTasksPerThread));
     }
 }

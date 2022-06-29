@@ -5,13 +5,13 @@ class MyRecursiveTask extends RecursiveTask<Integer> {
     private final int start;
     private final int finish;
 
-    private final int numTasksPerThread;
+    private final int capacityPerThread;
 
-    MyRecursiveTask(int[] array, int start, int finish, int numTasksPerThread) {
+    MyRecursiveTask(int[] array, int start, int finish, int capacityPerThread) {
         this.array = array;
         this.start = start;
         this.finish = finish;
-        this.numTasksPerThread = numTasksPerThread;
+        this.capacityPerThread = capacityPerThread;
     }
 
     int sumArr(int[] array, int start, int finish) {
@@ -24,12 +24,12 @@ class MyRecursiveTask extends RecursiveTask<Integer> {
 
     @Override
     protected Integer compute() {
-        if (finish - start < numTasksPerThread) {
+        if (finish - start < capacityPerThread) {
             return sumArr(array, start, finish);
         }
         int middle = (finish + start) / 2;
-        MyRecursiveTask oneTask = new MyRecursiveTask(array, start, middle, numTasksPerThread);
-        MyRecursiveTask secondTask = new MyRecursiveTask(array, middle + 1, finish, numTasksPerThread);
+        MyRecursiveTask oneTask = new MyRecursiveTask(array, start, middle, capacityPerThread);
+        MyRecursiveTask secondTask = new MyRecursiveTask(array, middle + 1, finish, capacityPerThread);
         oneTask.fork();
         return oneTask.join() + secondTask.compute();
     }

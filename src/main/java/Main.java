@@ -3,14 +3,14 @@ import java.util.Random;
 import java.util.concurrent.ForkJoinPool;
 
 public class Main {
-    static int numTasks = 200_000_000;
-    static int numTasksPerThread = 500_000;
+    static int capacity = 200_000_000;
+    static int capacityPerThread = 500_000;
 
     public static void main(String[] args) {
-        int[] array = getArray(numTasks);
+        int[] array = getArray(capacity);
         int result;
 
-        System.out.println("Суммирование " + numTasks + " элементов массива:");
+        System.out.println("Суммирование " + capacity + " элементов массива:");
         System.out.println();
 
         long start = System.currentTimeMillis();
@@ -64,6 +64,6 @@ public class Main {
     }
 
     static int sumArrayWithForkJoinPool(int[] array) {
-        return new ForkJoinPool().invoke(new MyRecursiveTask(array, 0, array.length - 1, numTasksPerThread));
+        return new ForkJoinPool().invoke(new MyRecursiveTask(array, 0, array.length - 1, capacityPerThread));
     }
 }
